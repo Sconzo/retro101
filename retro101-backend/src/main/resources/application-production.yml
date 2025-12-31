@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: production
+
+server:
+  port: ${PORT:8080}
+
+allowed-origins: ${ALLOWED_ORIGINS}
+
+logging:
+  level:
+    com.retro101: INFO

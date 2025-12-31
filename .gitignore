@@ -1,0 +1,30 @@
+# Frontend (Node.js)
+retro101-frontend/node_modules/
+retro101-frontend/dist/
+retro101-frontend/.env
+retro101-frontend/.env.local
+retro101-frontend/.env.development.local
+retro101-frontend/.env.production.local
+
+# Backend (Java/Maven)
+retro101-backend/target/
+retro101-backend/.env
+retro101-backend/*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Other
+nul
+*.bak

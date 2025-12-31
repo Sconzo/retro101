@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>retro101 - Design Direction Mockups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #171717;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #171717;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+
+        .nav-btn:hover {
+            background: #fafafa;
+            border-color: #a3a3a3;
+        }
+
+        .nav-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Container */
+        .container {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        .direction {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 3rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .direction.active {
+            display: block;
+        }
+
+        .direction-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 1.5rem;
+        }
+
+        .direction-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .direction-desc {
+            font-size: 16px;
+            color: #737373;
+            line-height: 1.6;
+        }
+
+        /* Mockup Container */
+        .mockup {
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        /* Common Styles */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .category {
+            background: white;
+            border-radius: 6px;
+        }
+
+        .category-header {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card {
+            background: white;
+            padding: 16px;
+            margin: 12px 16px;
+            border-radius: 6px;
+            line-height: 1.625;
+        }
+
+        .card-author {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #737373;
+        }
+
+        .add-card-btn {
+            display: block;
+            width: calc(100% - 32px);
+            margin: 0 16px 16px;
+            padding: 12px;
+            background: transparent;
+            border: 1px dashed #d4d4d4;
+            border-radius: 6px;
+            color: #737373;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+
+        .add-card-btn:hover {
+            background: #fafafa;
+            border-color: #a3a3a3;
+            color: #404040;
+        }
+
+        /* Direction 1: Ultra-Minimal */
+        .dir1 .category {
+            background: transparent;
+            border: none;
+        }
+
+        .dir1 .category-header {
+            border-left: 3px solid;
+            background: transparent;
+        }
+
+        .dir1 .category:nth-child(1) .category-header { border-color: #8b5cf6; }
+        .dir1 .category:nth-child(2) .category-header { border-color: #06b6d4; }
+        .dir1 .category:nth-child(3) .category-header { border-color: #f43f5e; }
+
+        .dir1 .card {
+            background: white;
+            border: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .dir1 .add-card-btn {
+            border: none;
+            background: transparent;
+            text-align: left;
+            color: #a3a3a3;
+        }
+
+        .dir1 .add-card-btn:hover {
+            background: #fafafa;
+            color: #737373;
+        }
+
+        /* Direction 2: Structured Clarity */
+        .dir2 .category {
+            background: white;
+            border: 1px solid #e5e5e5;
+        }
+
+        .dir2 .category-header {
+            border-bottom: 1px solid #e5e5e5;
+            border-left: 4px solid;
+        }
+
+        .dir2 .category:nth-child(1) .category-header { border-left-color: #8b5cf6; }
+        .dir2 .category:nth-child(2) .category-header { border-left-color: #06b6d4; }
+        .dir2 .category:nth-child(3) .category-header { border-left-color: #f43f5e; }
+
+        .dir2 .card {
+            border: 1px solid #e5e5e5;
+        }
+
+        /* Direction 3: Soft Elevation */
+        .dir3 .category {
+            background: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .dir3 .category-header {
+            border-left: 4px solid;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .dir3 .category:nth-child(1) .category-header { border-left-color: #8b5cf6; }
+        .dir3 .category:nth-child(2) .category-header { border-left-color: #06b6d4; }
+        .dir3 .category:nth-child(3) .category-header { border-left-color: #f43f5e; }
+
+        .dir3 .card {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .dir3 .card:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Direction 4: Dense & Efficient */
+        .dir4 .category {
+            background: white;
+            border: 1px solid #e5e5e5;
+        }
+
+        .dir4 .category-header {
+            padding: 8px 12px;
+            font-size: 12px;
+            border-left: 3px solid;
+            background: #fafafa;
+        }
+
+        .dir4 .category:nth-child(1) .category-header { border-left-color: #8b5cf6; }
+        .dir4 .category:nth-child(2) .category-header { border-left-color: #06b6d4; }
+        .dir4 .category:nth-child(3) .category-header { border-left-color: #f43f5e; }
+
+        .dir4 .card {
+            padding: 12px;
+            margin: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #f5f5f5;
+        }
+
+        .dir4 .add-card-btn {
+            margin: 0 12px 12px;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        /* Direction 5: Spacious & Calm */
+        .dir5 .mockup {
+            padding: 3rem;
+        }
+
+        .dir5 .category-grid {
+            gap: 32px;
+        }
+
+        .dir5 .category {
+            background: white;
+            border: 1px solid #e5e5e5;
+            padding: 8px 0;
+        }
+
+        .dir5 .category-header {
+            padding: 16px 24px;
+            border-left: 4px solid;
+            margin-bottom: 8px;
+        }
+
+        .dir5 .category:nth-child(1) .category-header { border-left-color: #8b5cf6; }
+        .dir5 .category:nth-child(2) .category-header { border-left-color: #06b6d4; }
+        .dir5 .category:nth-child(3) .category-header { border-left-color: #f43f5e; }
+
+        .dir5 .card {
+            padding: 20px 24px;
+            margin: 16px 24px;
+            border: 1px solid #f5f5f5;
+        }
+
+        .dir5 .add-card-btn {
+            margin: 16px 24px;
+            padding: 16px;
+        }
+
+        /* Direction 6: Vibrant Categories */
+        .dir6 .category {
+            border: 2px solid;
+        }
+
+        .dir6 .category:nth-child(1) { border-color: #8b5cf6; }
+        .dir6 .category:nth-child(2) { border-color: #06b6d4; }
+        .dir6 .category:nth-child(3) { border-color: #f43f5e; }
+
+        .dir6 .category-header {
+            color: white;
+            font-weight: 700;
+        }
+
+        .dir6 .category:nth-child(1) .category-header { background: #8b5cf6; }
+        .dir6 .category:nth-child(2) .category-header { background: #06b6d4; }
+        .dir6 .category:nth-child(3) .category-header { background: #f43f5e; }
+
+        .dir6 .card {
+            border: 1px solid #e5e5e5;
+        }
+
+        .dir6 .add-card-btn {
+            border: 2px dashed;
+        }
+
+        .dir6 .category:nth-child(1) .add-card-btn { border-color: #8b5cf6; color: #8b5cf6; }
+        .dir6 .category:nth-child(2) .add-card-btn { border-color: #06b6d4; color: #06b6d4; }
+        .dir6 .category:nth-child(3) .add-card-btn { border-color: #f43f5e; color: #f43f5e; }
+
+        /* Comparison Mode */
+        .comparison-mode .direction {
+            display: block !important;
+            margin-bottom: 3rem;
+        }
+
+        .comparison-mode .direction-header {
+            background: #fafafa;
+            padding: 1rem;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <h1>retro101 - Design Directions</h1>
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showDirection(1)">1. Ultra-Minimal</button>
+            <button class="nav-btn" onclick="showDirection(2)">2. Structured</button>
+            <button class="nav-btn" onclick="showDirection(3)">3. Elevation</button>
+            <button class="nav-btn" onclick="showDirection(4)">4. Dense</button>
+            <button class="nav-btn" onclick="showDirection(5)">5. Spacious</button>
+            <button class="nav-btn" onclick="showDirection(6)">6. Vibrant</button>
+            <button class="nav-btn" onclick="toggleComparison()">Compare All</button>
+        </div>
+    </nav>
+
+    <div class="container" id="container">
+        <!-- Direction 1: Ultra-Minimal -->
+        <div class="direction dir1 active" id="dir1">
+            <div class="direction-header">
+                <h2 class="direction-title">1. Ultra-Minimal</h2>
+                <p class="direction-desc">
+                    Minimalismo extremo. Interface quase invisível que desaparece completamente, deixando apenas o conteúdo.
+                    Cards flutuam sobre fundo neutro, categorias marcadas apenas por borda colorida sutil. Máxima atenção ao conteúdo.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 2: Structured Clarity -->
+        <div class="direction dir2" id="dir2">
+            <div class="direction-header">
+                <h2 class="direction-title">2. Structured Clarity</h2>
+                <p class="direction-desc">
+                    Estrutura clara com bordas e separadores definidos. Cada elemento tem seu espaço bem delimitado.
+                    Categorias têm containers visíveis, cards com bordas sutis. Organização visual evidente.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 3: Soft Elevation -->
+        <div class="direction dir3" id="dir3">
+            <div class="direction-header">
+                <h2 class="direction-title">3. Soft Elevation</h2>
+                <p class="direction-desc">
+                    Profundidade sutil através de sombras suaves. Cards e categorias "flutuam" sobre o background com elevação delicada.
+                    Hierarquia visual criada por layers de sombra. Sensação de tridimensionalidade minimalista.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 4: Dense & Efficient -->
+        <div class="direction dir4" id="dir4">
+            <div class="direction-header">
+                <h2 class="direction-title">4. Dense & Efficient</h2>
+                <p class="direction-desc">
+                    Máximo de informação no mínimo de espaço. Padding reduzido, fontes menores, espaçamento compacto.
+                    Ideal para times que querem ver muitos cards simultaneamente. Eficiência visual máxima.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 5: Spacious & Calm -->
+        <div class="direction dir5" id="dir5">
+            <div class="direction-header">
+                <h2 class="direction-title">5. Spacious & Calm</h2>
+                <p class="direction-desc">
+                    Muito whitespace, respiração visual generosa. Padding amplo, gaps largos entre elementos.
+                    Sensação de calma e descompressão. Ideal para retrospectivas mais reflexivas e contemplativas.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 6: Vibrant Categories -->
+        <div class="direction dir6" id="dir6">
+            <div class="direction-header">
+                <h2 class="direction-title">6. Vibrant Categories</h2>
+                <p class="direction-desc">
+                    Cores de categorias mais presentes e vibrantes. Headers coloridos, bordas destacadas.
+                    Identidade visual forte para cada categoria. Energético e visualmente distintivo.
+                </p>
+            </div>
+            <div class="mockup">
+                <div class="category-grid">
+                    <div class="category">
+                        <div class="category-header">O que foi bem</div>
+                        <div class="card">
+                            Deploy automatizado funcionou perfeitamente essa sprint
+                            <div class="card-author">Marina · 2min</div>
+                        </div>
+                        <div class="card">
+                            Time colaborou muito bem nas reviews de código
+                            <div class="card-author">Rafael · 5min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">A melhorar</div>
+                        <div class="card">
+                            Reuniões diárias estão passando do tempo
+                            <div class="card-author">Ana · 3min</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                    <div class="category">
+                        <div class="category-header">Ações</div>
+                        <div class="card">
+                            Implementar timeboxing nas dailies (15min hard stop)
+                            <div class="card-author">Marina · agora</div>
+                        </div>
+                        <button class="add-card-btn">+ Adicionar card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let comparisonMode = false;
+
+        function showDirection(num) {
+            if (comparisonMode) return;
+
+            // Hide all directions
+            document.querySelectorAll('.direction').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            // Show selected direction
+            document.getElementById('dir' + num).classList.add('active');
+            document.querySelectorAll('.nav-btn')[num - 1].classList.add('active');
+        }
+
+        function toggleComparison() {
+            comparisonMode = !comparisonMode;
+            const container = document.getElementById('container');
+            const btn = document.querySelectorAll('.nav-btn')[6];
+
+            if (comparisonMode) {
+                container.classList.add('comparison-mode');
+                btn.classList.add('active');
+                btn.textContent = 'Single View';
+            } else {
+                container.classList.remove('comparison-mode');
+                btn.classList.remove('active');
+                btn.textContent = 'Compare All';
+                showDirection(1);
+            }
+        }
+    </script>
+</body>
+</html>

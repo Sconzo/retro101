@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: development
+
+server:
+  port: 8080
+
+allowed-origins: http://localhost:5173
+
+logging:
+  level:
+    com.retro101: DEBUG
