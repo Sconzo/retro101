@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Room as RoomType } from '../types/room';
+import { OnboardingModal } from '../features/room/components/OnboardingModal';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -10,6 +11,9 @@ export function Room() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [joinLoading, setJoinLoading] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!roomId) {
@@ -25,15 +29,18 @@ export function Room() {
         const data = await api.getRoomById(roomId);
         setRoom(data);
 
-        // First-visit detection
+        // Check if participant already exists for this room
+        const participantKey = `participant_${roomId}`;
+        const existingParticipant = localStorage.getItem(participantKey);
+
+        // Show modal if: first visit AND no existing participant
         const visitedKey = `visited_room_${roomId}`;
         const hasVisited = localStorage.getItem(visitedKey);
 
-        if (!hasVisited) {
+        if (!hasVisited && !existingParticipant) {
           setIsFirstVisit(true);
+          setShowModal(true);
           localStorage.setItem(visitedKey, 'true');
-          // Story 1.4 will implement onboarding navigation
-          console.log('First visit to this room - onboarding will be added in Story 1.4');
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load room';
@@ -45,6 +52,29 @@ export function Room() {
 
     fetchRoom();
   }, [roomId, navigate]);
+
+  const handleJoinRoom = async (name: string) => {
+    if (!roomId) return;
+
+    try {
+      setJoinLoading(true);
+      setJoinError(null);
+
+      const participant = await api.addParticipant(roomId, name);
+
+      // Save participant to localStorage
+      const participantKey = `participant_${roomId}`;
+      localStorage.setItem(participantKey, JSON.stringify(participant));
+
+      // Close modal
+      setShowModal(false);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to join room. Please try again.';
+      setJoinError(errorMessage);
+    } finally {
+      setJoinLoading(false);
+    }
+  };
 
   const handleRetry = () => {
     window.location.reload();
@@ -106,36 +136,45 @@ export function Room() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Retrospective Room
-          </h1>
-          <p className="text-gray-600">
-            {isFirstVisit && <span className="text-blue-600 font-semibold">Welcome! </span>}
-            Share this room with your team to collaborate
-          </p>
-        </header>
+    <>
+      <OnboardingModal
+        isOpen={showModal}
+        onSubmit={handleJoinRoom}
+        isLoading={joinLoading}
+        error={joinError}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {room.categories.map((category) => (
-            <div
-              key={category.id}
-              className="bg-white rounded-lg shadow p-6 min-h-[300px]"
-            >
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
-                {category.name}
-              </h2>
-              <div className="space-y-2">
-                <p className="text-gray-400 text-sm italic">
-                  No cards yet - cards will be added in Story 2.2
-                </p>
+      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Retrospective Room
+            </h1>
+            <p className="text-gray-600">
+              {isFirstVisit && <span className="text-blue-600 font-semibold">Welcome! </span>}
+              Share this room with your team to collaborate
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {room.categories.map((category) => (
+              <div
+                key={category.id}
+                className="bg-white rounded-lg shadow p-6 min-h-[300px]"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
+                  {category.name}
+                </h2>
+                <div className="space-y-2">
+                  <p className="text-gray-400 text-sm italic">
+                    No cards yet - cards will be added in Story 2.2
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,6 +14,14 @@ import java.util.List;
 public class Room {
     private String id;
     private List<Category> categories;
+    private List<Participant> participants;
     private LocalDateTime createdAt;
     private boolean active;
+
+    public void addParticipant(Participant participant) {
+        if (this.participants == null) {
+            this.participants = new ArrayList<>();
+        }
+        this.participants.add(participant);
+    }
 }

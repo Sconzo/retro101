@@ -1,7 +1,9 @@
 package com.retro101.controller;
 
+import com.retro101.dto.AddParticipantRequest;
 import com.retro101.dto.CreateRoomRequest;
 import com.retro101.dto.CreateRoomResponse;
+import com.retro101.model.Participant;
 import com.retro101.model.Room;
 import com.retro101.service.RoomService;
 import jakarta.validation.Valid;
@@ -25,5 +27,14 @@ public class RoomController {
     public ResponseEntity<Room> getRoomById(@PathVariable String roomId) {
         Room room = roomService.getRoomById(roomId);
         return ResponseEntity.ok(room);
+    }
+
+    @PostMapping("/{roomId}/participants")
+    public ResponseEntity<Participant> addParticipant(
+            @PathVariable String roomId,
+            @Valid @RequestBody AddParticipantRequest request
+    ) {
+        Participant participant = roomService.addParticipant(roomId, request.getName());
+        return ResponseEntity.ok(participant);
     }
 }
