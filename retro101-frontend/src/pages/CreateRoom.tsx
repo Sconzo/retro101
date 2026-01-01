@@ -128,7 +128,7 @@ export function CreateRoom() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
       <Toaster position="top-center" />
-      <div className="max-w-2xl w-full">
+      <main className="max-w-2xl w-full" role="main">
         <header className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Create Retrospective Room
@@ -138,7 +138,7 @@ export function CreateRoom() {
           </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Create room form">
           <div className="space-y-4">
             {categories.map((category, index) => (
               <div key={index} className="flex gap-2">
@@ -147,6 +147,7 @@ export function CreateRoom() {
                   value={category}
                   onChange={(e) => handleCategoryChange(index, e.target.value)}
                   placeholder={`Category ${index + 1}`}
+                  aria-label={`Category ${index + 1} name`}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {categories.length > 2 && (
@@ -154,6 +155,7 @@ export function CreateRoom() {
                     type="button"
                     onClick={() => removeCategory(index)}
                     className="px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    aria-label={`Remove category ${index + 1}`}
                   >
                     ✕
                   </button>
@@ -180,7 +182,7 @@ export function CreateRoom() {
             {isCreating ? 'Creating...' : 'Create Room'}
           </button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

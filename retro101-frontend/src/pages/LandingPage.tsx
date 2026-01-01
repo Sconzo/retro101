@@ -11,10 +11,11 @@ export function LandingPage() {
           Simple retrospectives for agile teams
         </p>
       </header>
-      <main className="flex items-center justify-center">
+      <main className="flex items-center justify-center" role="main">
         <button
           onClick={() => navigate('/create')}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          aria-label="Create a new retrospective room"
         >
           Create New Room
         </button>

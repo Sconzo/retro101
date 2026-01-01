@@ -9,6 +9,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import { useRoomStore } from '../stores/roomStore';
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { ReconnectionBanner } from '../components/ReconnectionBanner';
+import { LiveAnnouncer } from '../components/LiveAnnouncer';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -199,6 +200,8 @@ export function Room() {
 
   return (
     <>
+      <LiveAnnouncer />
+
       <OnboardingModal
         isOpen={showModal}
         onSubmit={handleJoinRoom}
@@ -228,21 +231,23 @@ export function Room() {
             </p>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Main content: Categories */}
-            <div className="lg:col-span-3">
+          <main role="main">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Main content: Categories */}
+              <section className="lg:col-span-3" aria-label="Retrospective categories">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {room.categories.map((category) => (
                   <CategoryColumn key={category.id} category={category} />
                 ))}
               </div>
-            </div>
+              </section>
 
-            {/* Sidebar: Participant List */}
-            <div className="lg:col-span-1">
-              <ParticipantList roomId={roomId!} />
+              {/* Sidebar: Participant List */}
+              <aside className="lg:col-span-1" aria-label="Participants">
+                <ParticipantList roomId={roomId!} />
+              </aside>
             </div>
-          </div>
+          </main>
         </div>
       </div>
     </>
