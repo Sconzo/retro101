@@ -16,7 +16,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic")
+                .setHeartbeatValue(new long[]{10000, 10000}); // Send/receive heartbeat every 10s
         config.setApplicationDestinationPrefixes("/app");
     }
 

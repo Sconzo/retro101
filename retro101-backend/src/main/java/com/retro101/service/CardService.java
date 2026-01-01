@@ -137,4 +137,22 @@ public class CardService {
 
         log.info("Card deleted successfully: cardId={}", cardId);
     }
+
+    /**
+     * Retrieves all cards in a room.
+     *
+     * @param roomId The ID of the room
+     * @return List of all cards in the room
+     * @throws RoomNotFoundException if room doesn't exist
+     */
+    public java.util.List<Card> getCards(String roomId) {
+        log.info("Fetching all cards for room={}", roomId);
+
+        // Validate room exists
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + roomId));
+
+        // Return all cards (or empty list if none)
+        return room.getCards();
+    }
 }

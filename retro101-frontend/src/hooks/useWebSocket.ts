@@ -10,6 +10,7 @@ import {
 export function useWebSocket(roomId: string) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [reconnectInfo, setReconnectInfo] = useState<{ retryCount: number; maxRetries: number } | null>(null);
 
   useEffect(() => {
     // Connect to WebSocket
@@ -18,6 +19,9 @@ export function useWebSocket(roomId: string) {
     // Subscribe to connection changes
     const unsubscribeConnection = websocketService.onConnectionChange((connected) => {
       setIsConnected(connected);
+      if (connected) {
+        setReconnectInfo(null); // Clear reconnect info when connected
+      }
     });
 
     // Subscribe to errors
@@ -25,10 +29,16 @@ export function useWebSocket(roomId: string) {
       setError(err);
     });
 
+    // Subscribe to reconnection attempts
+    const unsubscribeReconnecting = websocketService.onReconnecting((retryCount, maxRetries) => {
+      setReconnectInfo({ retryCount, maxRetries });
+    });
+
     // Cleanup
     return () => {
       unsubscribeConnection();
       unsubscribeError();
+      unsubscribeReconnecting();
       websocketService.disconnect();
     };
   }, [roomId]);
@@ -52,6 +62,7 @@ export function useWebSocket(roomId: string) {
   return {
     isConnected,
     error,
+    reconnectInfo,
     sendCardCreate,
     sendCardUpdate,
     sendCardDelete,

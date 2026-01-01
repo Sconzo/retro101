@@ -8,6 +8,7 @@ import { CategoryColumn } from '../features/room/components/CategoryColumn';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useRoomStore } from '../stores/roomStore';
 import { ConnectionStatus } from '../components/ConnectionStatus';
+import { ReconnectionBanner } from '../components/ReconnectionBanner';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -21,7 +22,7 @@ export function Room() {
   const [joinError, setJoinError] = useState<string | null>(null);
 
   // WebSocket connection
-  const { isConnected, error: wsError, onMessage } = useWebSocket(roomId || '');
+  const { isConnected, error: wsError, reconnectInfo, onMessage } = useWebSocket(roomId || '');
   const { handleCardMessage, setConnectionStatus, setError: setWsError, clearCards } = useRoomStore();
 
   // Update connection status based on WebSocket state
@@ -183,6 +184,13 @@ export function Room() {
         isLoading={joinLoading}
         error={joinError}
       />
+
+      {reconnectInfo && (
+        <ReconnectionBanner
+          retryCount={reconnectInfo.retryCount}
+          maxRetries={reconnectInfo.maxRetries}
+        />
+      )}
 
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">

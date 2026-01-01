@@ -34,16 +34,23 @@ export type CardDeleteMessage = {
 type MessageCallback = (message: CardBroadcastMessage) => void;
 type ConnectionCallback = (connected: boolean) => void;
 type ErrorCallback = (error: Error) => void;
+type ReconnectionCallback = (retryCount: number, maxRetries: number) => void;
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8080';
+const MAX_RECONNECT_ATTEMPTS = 10;
+const INITIAL_RECONNECT_DELAY = 1000; // 1 second
+const MAX_RECONNECT_DELAY = 30000; // 30 seconds
 
 export class WebSocketService {
   private client: Client | null = null;
   private messageCallbacks: MessageCallback[] = [];
   private connectionCallbacks: ConnectionCallback[] = [];
   private errorCallbacks: ErrorCallback[] = [];
+  private reconnectionCallbacks: ReconnectionCallback[] = [];
   private currentRoomId: string | null = null;
   private isConnecting = false;
+  private reconnectAttempts = 0;
+  private reconnectTimeout: number | null = null;
 
   connect(roomId: string): void {
     if (this.client?.connected && this.currentRoomId === roomId) {
@@ -64,24 +71,28 @@ export class WebSocketService {
       debug: (str: string) => {
         console.log('[STOMP]', str);
       },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      reconnectDelay: 0, // We'll handle reconnection manually
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
       onConnect: () => {
         console.log('WebSocket connected to room:', roomId);
         this.isConnecting = false;
+        this.reconnectAttempts = 0; // Reset on successful connection
         this.notifyConnectionChange(true);
         this.subscribeToRoom(roomId);
+        this.reconcileState(roomId); // Fetch latest state after reconnect
       },
       onDisconnect: () => {
         console.log('WebSocket disconnected');
         this.isConnecting = false;
         this.notifyConnectionChange(false);
+        this.scheduleReconnect(roomId);
       },
       onStompError: (frame) => {
         console.error('STOMP error:', frame);
         this.isConnecting = false;
         this.notifyError(new Error(`STOMP error: ${frame.headers['message']}`));
+        this.scheduleReconnect(roomId);
       },
       onWebSocketError: (event) => {
         console.error('WebSocket error:', event);
@@ -95,12 +106,66 @@ export class WebSocketService {
   }
 
   disconnect(): void {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
     if (this.client) {
       this.client.deactivate();
       this.client = null;
       this.currentRoomId = null;
       this.isConnecting = false;
+      this.reconnectAttempts = 0;
       this.notifyConnectionChange(false);
+    }
+  }
+
+  private scheduleReconnect(_roomId: string): void {
+    if (this.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      console.error('Max reconnection attempts reached');
+      this.notifyError(new Error('Failed to reconnect after maximum attempts'));
+      return;
+    }
+
+    this.reconnectAttempts++;
+
+    // Calculate exponential backoff delay: 1s, 2s, 4s, 8s, 16s, 30s (max)
+    const delay = Math.min(
+      INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts - 1),
+      MAX_RECONNECT_DELAY
+    );
+
+    console.log(
+      `Scheduling reconnect attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} in ${delay}ms`
+    );
+
+    this.notifyReconnecting(this.reconnectAttempts, MAX_RECONNECT_ATTEMPTS);
+
+    this.reconnectTimeout = setTimeout(() => {
+      console.log(`Reconnect attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
+      this.client?.activate();
+    }, delay);
+  }
+
+  private async reconcileState(roomId: string): Promise<void> {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const response = await fetch(`${API_URL}/api/rooms/${roomId}/cards`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch cards: ${response.statusText}`);
+      }
+
+      const cards = await response.json();
+      console.log('State reconciliation: fetched', cards.length, 'cards');
+
+      // Import roomStore dynamically to avoid circular dependency
+      const { useRoomStore } = await import('../stores/roomStore');
+      useRoomStore.setState({ cards });
+    } catch (error) {
+      console.error('Failed to reconcile state after reconnect:', error);
+      this.notifyError(new Error('Failed to sync state after reconnection'));
     }
   }
 
@@ -188,6 +253,13 @@ export class WebSocketService {
     };
   }
 
+  onReconnecting(callback: ReconnectionCallback): () => void {
+    this.reconnectionCallbacks.push(callback);
+    return () => {
+      this.reconnectionCallbacks = this.reconnectionCallbacks.filter((cb) => cb !== callback);
+    };
+  }
+
   private notifyMessage(message: CardBroadcastMessage): void {
     this.messageCallbacks.forEach((callback) => callback(message));
   }
@@ -200,8 +272,16 @@ export class WebSocketService {
     this.errorCallbacks.forEach((callback) => callback(error));
   }
 
+  private notifyReconnecting(retryCount: number, maxRetries: number): void {
+    this.reconnectionCallbacks.forEach((callback) => callback(retryCount, maxRetries));
+  }
+
   isConnected(): boolean {
     return this.client?.connected ?? false;
+  }
+
+  getReconnectAttempts(): number {
+    return this.reconnectAttempts;
   }
 }
 
