@@ -1,72 +1,137 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Room as RoomType } from '../types/room';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
+  const navigate = useNavigate();
   const [room, setRoom] = useState<RoomType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId) {
+      navigate('/');
+      return;
+    }
 
-    api
-      .getRoomById(roomId)
-      .then((data) => {
+    const fetchRoom = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await api.getRoomById(roomId);
         setRoom(data);
+
+        // First-visit detection
+        const visitedKey = `visited_room_${roomId}`;
+        const hasVisited = localStorage.getItem(visitedKey);
+
+        if (!hasVisited) {
+          setIsFirstVisit(true);
+          localStorage.setItem(visitedKey, 'true');
+          // Story 1.4 will implement onboarding navigation
+          console.log('First visit to this room - onboarding will be added in Story 1.4');
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load room';
+        setError(errorMessage);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message || 'Failed to load room');
-        setLoading(false);
-      });
-  }, [roomId]);
+      }
+    };
+
+    fetchRoom();
+  }, [roomId, navigate]);
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-gray-600">Loading room...</p>
-      </div>
-    );
-  }
-
-  if (error || !room) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Room not found'}</p>
-          <a href="/" className="text-blue-600 hover:underline">
-            Go back to home
-          </a>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-lg text-gray-600">Loading room...</p>
         </div>
       </div>
     );
   }
 
+  if (error) {
+    const isRoomNotFound = error.includes('not found') || error.includes('NOT_FOUND');
+
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="text-6xl mb-4">{isRoomNotFound ? '🔍' : '⚠️'}</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {isRoomNotFound ? 'Room Not Found' : 'Failed to Load Room'}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {isRoomNotFound
+              ? 'This room doesn\'t exist or may have been deleted.'
+              : 'There was a problem loading the room. Please try again.'}
+          </p>
+          <div className="flex gap-3 justify-center">
+            {!isRoomNotFound && (
+              <button
+                onClick={handleRetry}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Retry
+              </button>
+            )}
+            <button
+              onClick={handleGoHome}
+              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!room) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-white p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Retrospective Room
           </h1>
-          <p className="text-gray-600">Room ID: {room.id}</p>
+          <p className="text-gray-600">
+            {isFirstVisit && <span className="text-blue-600 font-semibold">Welcome! </span>}
+            Share this room with your team to collaborate
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {room.categories.map((category) => (
             <div
               key={category.id}
-              className="border-2 border-gray-200 rounded-lg p-6"
+              className="bg-white rounded-lg shadow p-6 min-h-[300px]"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
                 {category.name}
               </h2>
-              <p className="text-gray-500 text-sm">
-                Cards will appear here (Story 2.2)
-              </p>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm italic">
+                  No cards yet - cards will be added in Story 2.2
+                </p>
+              </div>
             </div>
           ))}
         </div>

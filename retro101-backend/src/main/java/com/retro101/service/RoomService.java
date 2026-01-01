@@ -49,6 +49,6 @@ public class RoomService {
 
     public Room getRoomById(String roomId) {
         return roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
+                .orElseThrow(() -> new com.retro101.exception.RoomNotFoundException("Room not found: " + roomId));
     }
 }
