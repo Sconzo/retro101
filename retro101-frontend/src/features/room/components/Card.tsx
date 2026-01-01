@@ -75,11 +75,11 @@ export function Card({ card }: CardProps) {
   return (
     <>
       <div
-        className={`bg-white rounded-lg shadow p-4 transition-all duration-200 ${
+        className={`bg-white rounded-lg shadow p-4 transition-all duration-200 ease-out ${
           isPending ? 'opacity-60' : ''
         } ${isFadingOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} ${
           !isPending ? 'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2' : ''
-        }`}
+        } animate-fadeIn`}
         data-testid="card"
         tabIndex={isPending ? undefined : 0}
         onKeyDown={handleKeyDown}

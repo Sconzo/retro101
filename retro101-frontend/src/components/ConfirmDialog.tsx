@@ -47,12 +47,12 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
       onClick={onCancel}
       data-testid="confirm-dialog-overlay"
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4"
+        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 animate-slideIn"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         data-testid="confirm-dialog"
