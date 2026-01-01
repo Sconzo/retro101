@@ -46,3 +46,73 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Direction 6: Vibrant Categories */
+.category-column {
+  border: 2px solid #e5e5e5;
+}
+
+.category-column:nth-child(1) {
+  border-color: #8b5cf6;
+}
+
+.category-column:nth-child(1) .category-header {
+  background-color: #8b5cf6;
+}
+
+.category-column:nth-child(1) .add-card-btn {
+  color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+.category-column:nth-child(2) {
+  border-color: #06b6d4;
+}
+
+.category-column:nth-child(2) .category-header {
+  background-color: #06b6d4;
+}
+
+.category-column:nth-child(2) .add-card-btn {
+  color: #06b6d4;
+  border-color: #06b6d4;
+}
+
+.category-column:nth-child(3) {
+  border-color: #f43f5e;
+}
+
+.category-column:nth-child(3) .category-header {
+  background-color: #f43f5e;
+}
+
+.category-column:nth-child(3) .add-card-btn {
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+
+.category-column:nth-child(4) {
+  border-color: #f59e0b;
+}
+
+.category-column:nth-child(4) .category-header {
+  background-color: #f59e0b;
+}
+
+.category-column:nth-child(4) .add-card-btn {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.category-column:nth-child(5) {
+  border-color: #10b981;
+}
+
+.category-column:nth-child(5) .category-header {
+  background-color: #10b981;
+}
+
+.category-column:nth-child(5) .add-card-btn {
+  color: #10b981;
+  border-color: #10b981;
+}

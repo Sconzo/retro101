@@ -24,16 +24,16 @@ export function CategoryColumn({ category }: CategoryColumnProps) {
 
   return (
     <div
-      className="bg-white rounded-lg shadow p-6 min-h-[300px] flex flex-col"
+      className="category-column bg-white rounded-md min-h-[300px] flex flex-col"
       data-testid="category-column"
     >
       {/* Category Header */}
-      <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
+      <h2 className="category-header text-sm font-semibold text-white px-4 py-3 uppercase tracking-wide">
         {category.name}
       </h2>
 
       {/* Cards List */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-3">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {categoryCards.length === 0 && !showInput && (
           <p className="text-center py-8 text-gray-400 text-sm italic">
             No cards yet - be the first to add one!
@@ -45,20 +45,22 @@ export function CategoryColumn({ category }: CategoryColumnProps) {
       </div>
 
       {/* Card Input or Add Button */}
-      {showInput ? (
-        <CardInput
-          onSubmit={handleCreateCard}
-          onCancel={() => setShowInput(false)}
-        />
-      ) : (
-        <button
-          onClick={() => setShowInput(true)}
-          className="w-full min-h-[48px] py-3 text-sm text-gray-600 border-2 border-dashed border-gray-300 rounded hover:border-blue-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          data-testid="add-card-button"
-        >
-          + Add Card
-        </button>
-      )}
+      <div className="p-4 pt-0">
+        {showInput ? (
+          <CardInput
+            onSubmit={handleCreateCard}
+            onCancel={() => setShowInput(false)}
+          />
+        ) : (
+          <button
+            onClick={() => setShowInput(true)}
+            className="add-card-btn w-full min-h-[48px] py-3 text-sm border-2 border-dashed rounded hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+            data-testid="add-card-button"
+          >
+            + Add Card
+          </button>
+        )}
+      </div>
     </div>
   );
 }
