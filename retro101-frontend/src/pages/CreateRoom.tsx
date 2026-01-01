@@ -109,14 +109,14 @@ export function CreateRoom() {
             />
             <button
               onClick={copyToClipboard}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold transition-colors"
+              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
             >
               Copy
             </button>
           </div>
           <button
             onClick={goToRoom}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Go to Room
           </button>
@@ -153,7 +153,7 @@ export function CreateRoom() {
                   <button
                     type="button"
                     onClick={() => removeCategory(index)}
-                    className="px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+                    className="px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
                     ✕
                   </button>
@@ -166,7 +166,7 @@ export function CreateRoom() {
             <button
               type="button"
               onClick={addCategory}
-              className="w-full px-4 py-3 border-2 border-dashed border-gray-300 hover:border-gray-400 text-gray-600 rounded-lg transition-colors"
+              className="w-full px-4 py-3 border-2 border-dashed border-gray-300 hover:border-gray-400 text-gray-600 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               + Add Category
             </button>
@@ -175,7 +175,7 @@ export function CreateRoom() {
           <button
             type="submit"
             disabled={isCreating}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-8 py-4 rounded-lg transition-colors"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold px-8 py-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             {isCreating ? 'Creating...' : 'Create Room'}
           </button>

@@ -46,6 +46,19 @@ export function Card({ card }: CardProps) {
     }, 200); // Match animation duration
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Only handle if card is focused and not pending
+    if (isPending) return;
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setIsEditing(true);
+    } else if (e.key === 'Delete') {
+      e.preventDefault();
+      setShowDeleteConfirm(true);
+    }
+  };
+
   // Show edit input if editing
   if (isEditing) {
     return (
@@ -64,8 +77,14 @@ export function Card({ card }: CardProps) {
       <div
         className={`bg-white rounded-lg shadow p-4 transition-all duration-200 ${
           isPending ? 'opacity-60' : ''
-        } ${isFadingOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+        } ${isFadingOut ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} ${
+          !isPending ? 'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2' : ''
+        }`}
         data-testid="card"
+        tabIndex={isPending ? undefined : 0}
+        onKeyDown={handleKeyDown}
+        role="article"
+        aria-label={`Card by ${card.authorName}: ${card.content}`}
       >
         <div className="flex items-start gap-3 mb-2">
           <Avatar name={card.authorName} size={24} />
@@ -82,7 +101,7 @@ export function Card({ card }: CardProps) {
                   <>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="text-gray-400 hover:text-blue-600 transition-colors"
+                      className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                       aria-label="Edit card"
                       data-testid="card-edit-button"
                     >
@@ -97,7 +116,7 @@ export function Card({ card }: CardProps) {
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      className="text-gray-400 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
                       aria-label="Delete card"
                       data-testid="card-delete-button"
                     >

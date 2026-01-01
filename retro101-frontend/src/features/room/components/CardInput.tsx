@@ -64,7 +64,7 @@ export function CardInput({ onSubmit, onCancel }: CardInputProps) {
         <div className="flex gap-2">
           <button
             onClick={onCancel}
-            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 rounded"
             data-testid="card-input-cancel"
           >
             Cancel
@@ -72,7 +72,7 @@ export function CardInput({ onSubmit, onCancel }: CardInputProps) {
           <button
             onClick={handleSubmit}
             disabled={!content.trim()}
-            className="px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             data-testid="card-input-save"
           >
             Save

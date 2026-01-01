@@ -60,7 +60,7 @@ development_status:
 
   # Epic 3: Accessible & Responsive Polish
   epic-3: in-progress
-  3-1-keyboard-navigation-shortcuts: ready-for-dev
+  3-1-keyboard-navigation-shortcuts: review
   3-2-accessibility-compliance-wcag-aa: ready-for-dev
   3-3-responsive-design-tablet-mobile: ready-for-dev
   3-4-animations-motion-preferences: ready-for-dev

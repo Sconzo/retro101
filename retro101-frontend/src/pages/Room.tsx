@@ -56,6 +56,27 @@ export function Room() {
     };
   }, [roomId, onMessage, handleCardMessage, clearCards]);
 
+  // Keyboard shortcuts: Alt+1-5 to focus category Add Card buttons
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Alt+1 through Alt+5
+      if (e.altKey && e.key >= '1' && e.key <= '5') {
+        e.preventDefault();
+        const categoryIndex = parseInt(e.key) - 1;
+
+        // Find all "Add Card" buttons (they have data-testid="add-card-button")
+        const addCardButtons = document.querySelectorAll('[data-testid="add-card-button"]');
+
+        if (addCardButtons[categoryIndex]) {
+          (addCardButtons[categoryIndex] as HTMLButtonElement).focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   useEffect(() => {
     if (!roomId) {
       navigate('/');
@@ -155,14 +176,14 @@ export function Room() {
             {!isRoomNotFound && (
               <button
                 onClick={handleRetry}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Retry
               </button>
             )}
             <button
               onClick={handleGoHome}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
+              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
             >
               Back to Home
             </button>
