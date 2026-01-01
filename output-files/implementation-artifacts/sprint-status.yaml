@@ -53,7 +53,7 @@ development_status:
   epic-2: in-progress
   2-1-websocket-infrastructure-connection-setup: review
   2-2-create-cards-in-real-time: review
-  2-3-edit-cards-with-real-time-synchronization: ready-for-dev
+  2-3-edit-cards-with-real-time-synchronization: review
   2-4-delete-cards-with-real-time-synchronization: ready-for-dev
   2-5-websocket-reconnection-heartbeat: ready-for-dev
   epic-2-retrospective: optional

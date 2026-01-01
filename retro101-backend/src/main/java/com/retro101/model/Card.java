@@ -32,6 +32,8 @@ public class Card {
     private String roomId;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private String updatedBy;
 
     /**
      * Convenience constructor that generates ID and timestamp automatically

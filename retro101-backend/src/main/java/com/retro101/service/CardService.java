@@ -61,4 +61,48 @@ public class CardService {
         log.info("Card created successfully: cardId={}", card.getId());
         return card;
     }
+
+    /**
+     * Updates an existing card's content.
+     *
+     * @param roomId     The ID of the room
+     * @param cardId     The ID of the card to update
+     * @param content    The new card content
+     * @param editorId   The participant ID who is editing the card
+     * @return The updated card
+     * @throws RoomNotFoundException      if room doesn't exist
+     * @throws IllegalArgumentException   if card not found or validation fails
+     */
+    public Card updateCard(String roomId, String cardId, String content, String editorId) {
+        log.info("Updating card={} in room={}, editor={}", cardId, roomId, editorId);
+
+        // Validate room exists
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + roomId));
+
+        // Find the card
+        Card card = room.getCards().stream()
+                .filter(c -> c.getId().equals(cardId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
+
+        // Validate content
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("Card content cannot be empty");
+        }
+        if (content.length() > 500) {
+            throw new IllegalArgumentException("Card content must not exceed 500 characters");
+        }
+
+        // Update card
+        card.setContent(content.trim());
+        card.setUpdatedAt(java.time.LocalDateTime.now());
+        card.setUpdatedBy(editorId);
+
+        // Save room (in-memory update)
+        roomRepository.save(room);
+
+        log.info("Card updated successfully: cardId={}", card.getId());
+        return card;
+    }
 }

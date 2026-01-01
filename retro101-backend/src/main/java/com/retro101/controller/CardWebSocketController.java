@@ -76,20 +76,36 @@ public class CardWebSocketController {
         log.info("Received card update message: roomId={}, cardId={}, participantId={}",
                 message.getRoomId(), message.getCardId(), message.getParticipantId());
 
-        // Create broadcast message
-        CardBroadcastMessage broadcast = new CardBroadcastMessage();
-        broadcast.setAction("updated");
-        broadcast.setCardId(message.getCardId());
-        broadcast.setCategoryId(null); // Not changed in update
-        broadcast.setContent(message.getContent());
-        broadcast.setParticipantId(message.getParticipantId());
-        broadcast.setParticipantName(null); // Will be set by frontend
-        broadcast.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        try {
+            // Update card via service (persists in room)
+            Card card = cardService.updateCard(
+                    message.getRoomId(),
+                    message.getCardId(),
+                    message.getContent(),
+                    message.getParticipantId()
+            );
 
-        // Broadcast to all subscribers of the room
-        messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), broadcast);
+            // Create broadcast message with updated card data
+            CardBroadcastMessage broadcast = new CardBroadcastMessage();
+            broadcast.setAction("updated");
+            broadcast.setCardId(card.getId());
+            broadcast.setCategoryId(card.getCategoryId());
+            broadcast.setContent(card.getContent());
+            broadcast.setParticipantId(message.getParticipantId());
+            broadcast.setParticipantName(card.getAuthorName());
+            broadcast.setTimestamp(card.getUpdatedAt() != null
+                    ? card.getUpdatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    : card.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
-        log.info("Broadcasted card updated: cardId={}", broadcast.getCardId());
+            // Broadcast to all subscribers of the room
+            messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), broadcast);
+
+            log.info("Broadcasted card updated: cardId={}", broadcast.getCardId());
+        } catch (Exception e) {
+            log.error("Failed to update card: roomId={}, cardId={}, error={}",
+                    message.getRoomId(), message.getCardId(), e.getMessage(), e);
+            // For MVP, just log the error - Story 2.5 will add proper error handling
+        }
     }
 
     @MessageMapping("/card.delete")

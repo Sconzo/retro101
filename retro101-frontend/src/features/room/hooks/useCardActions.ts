@@ -5,7 +5,7 @@ import type { Card } from '../../../types/room';
 
 export function useCardActions() {
   const { roomId } = useParams<{ roomId: string }>();
-  const { sendCardCreate, isConnected } = useWebSocket(roomId || '');
+  const { sendCardCreate, sendCardUpdate, isConnected } = useWebSocket(roomId || '');
 
   const createCard = (content: string, categoryId: string) => {
     if (!roomId) {
@@ -63,5 +63,59 @@ export function useCardActions() {
     }
   };
 
-  return { createCard };
+  const updateCard = (cardId: string, content: string) => {
+    if (!roomId) {
+      console.error('No room ID available');
+      return;
+    }
+
+    if (!isConnected) {
+      console.error('WebSocket not connected');
+      return;
+    }
+
+    // Get current participant from localStorage
+    const participantKey = `participant_${roomId}`;
+    const participantData = localStorage.getItem(participantKey);
+
+    if (!participantData) {
+      console.error('No participant found in localStorage');
+      return;
+    }
+
+    const participant = JSON.parse(participantData);
+
+    // Store original content for rollback
+    const originalCards = useRoomStore.getState().cards;
+    const originalCard = originalCards.find((c) => c.id === cardId);
+
+    if (!originalCard) {
+      console.error('Card not found:', cardId);
+      return;
+    }
+
+    // Optimistic update - update in store immediately
+    const updatedCards = originalCards.map((card) =>
+      card.id === cardId
+        ? { ...card, content, updatedAt: new Date().toISOString() }
+        : card
+    );
+    useRoomStore.setState({ cards: updatedCards });
+
+    // Send to server
+    try {
+      sendCardUpdate({
+        roomId,
+        cardId,
+        content,
+        participantId: participant.id,
+      });
+    } catch (error) {
+      // Rollback on error
+      useRoomStore.setState({ cards: originalCards });
+      console.error('Failed to update card:', error);
+    }
+  };
+
+  return { createCard, updateCard };
 }
