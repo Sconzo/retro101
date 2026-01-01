@@ -5,7 +5,10 @@ import com.retro101.dto.CardCreateMessage;
 import com.retro101.dto.CardDeleteMessage;
 import com.retro101.dto.CardUpdateMessage;
 import com.retro101.model.Card;
+import com.retro101.model.Room;
+import com.retro101.model.Participant;
 import com.retro101.service.CardService;
+import com.retro101.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 public class CardWebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
     private final CardService cardService;
+    private final RoomService roomService;
 
     // Rate limiting: Track card creation timestamps per participant
     private final java.util.concurrent.ConcurrentHashMap<String, java.util.concurrent.ConcurrentLinkedQueue<Long>> rateLimitMap =
@@ -42,13 +46,22 @@ public class CardWebSocketController {
                 // For MVP, just log and return - Story 2.5 will add proper error responses
                 return;
             }
+
+            // Get room to lookup participant name
+            Room room = roomService.getRoomById(message.getRoomId());
+            String participantName = room.getParticipants().stream()
+                    .filter(p -> p.getId().equals(message.getParticipantId()))
+                    .findFirst()
+                    .map(Participant::getName)
+                    .orElse(message.getParticipantId()); // Fallback to ID if not found
+
             // Create card via service (persists in room)
             Card card = cardService.createCard(
                     message.getRoomId(),
                     message.getContent(),
                     message.getCategoryId(),
                     message.getParticipantId(),
-                    message.getParticipantId() // Using participantId as participantName for now
+                    participantName
             );
 
             // Create broadcast message with real card data

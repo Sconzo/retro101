@@ -1,11 +1,10 @@
 import { useParams } from 'react-router-dom';
-import { useWebSocket } from '../../../hooks/useWebSocket';
+import { websocketService } from '../../../services/websocket';
 import { useRoomStore } from '../../../stores/roomStore';
 import type { Card } from '../../../types/room';
 
 export function useCardActions() {
   const { roomId } = useParams<{ roomId: string }>();
-  const { sendCardCreate, sendCardUpdate, sendCardDelete, isConnected } = useWebSocket(roomId || '');
 
   const createCard = (content: string, categoryId: string) => {
     if (!roomId) {
@@ -13,7 +12,7 @@ export function useCardActions() {
       return;
     }
 
-    if (!isConnected) {
+    if (!websocketService.isConnected()) {
       console.error('WebSocket not connected');
       return;
     }
@@ -49,7 +48,7 @@ export function useCardActions() {
 
     // Send to server
     try {
-      sendCardCreate({
+      websocketService.sendCardCreate({
         roomId,
         categoryId,
         content,
@@ -69,7 +68,7 @@ export function useCardActions() {
       return;
     }
 
-    if (!isConnected) {
+    if (!websocketService.isConnected()) {
       console.error('WebSocket not connected');
       return;
     }
@@ -104,7 +103,7 @@ export function useCardActions() {
 
     // Send to server
     try {
-      sendCardUpdate({
+      websocketService.sendCardUpdate({
         roomId,
         cardId,
         content,
@@ -123,7 +122,7 @@ export function useCardActions() {
       return;
     }
 
-    if (!isConnected) {
+    if (!websocketService.isConnected()) {
       console.error('WebSocket not connected');
       return;
     }
@@ -148,7 +147,7 @@ export function useCardActions() {
 
     // Send to server
     try {
-      sendCardDelete({
+      websocketService.sendCardDelete({
         roomId,
         cardId,
         participantId: participant.id,

@@ -4,7 +4,7 @@ spring:
       on-profile: development
 
 server:
-  port: 8080
+  port: 8081
 
 allowed-origins: http://localhost:5173
 frontend-url: http://localhost:5173

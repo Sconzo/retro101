@@ -1,4 +1,4 @@
-import type { CreateRoomRequest, CreateRoomResponse, Room, Participant } from '../types/room';
+import type { CreateRoomRequest, CreateRoomResponse, Room, Participant, Card } from '../types/room';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -68,6 +68,20 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch participants');
+    }
+
+    return response.json();
+  },
+
+  async getCards(roomId: string): Promise<Card[]> {
+    const response = await fetch(`${API_URL}/api/rooms/${roomId}/cards`);
+
+    if (response.status === 404) {
+      throw new Error('ROOM_NOT_FOUND');
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch cards');
     }
 
     return response.json();

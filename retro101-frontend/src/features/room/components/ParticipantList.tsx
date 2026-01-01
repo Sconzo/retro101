@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../../services/api';
 import { Avatar } from '../../../components/Avatar';
+import { useWebSocket } from '../../../hooks/useWebSocket';
 import type { Participant } from '../../../types/room';
 
 interface ParticipantListProps {
@@ -12,6 +13,9 @@ export function ParticipantList({ roomId }: ParticipantListProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentParticipantId, setCurrentParticipantId] = useState<string | null>(null);
+
+  // WebSocket connection for real-time updates
+  const { onMessage } = useWebSocket(roomId);
 
   useEffect(() => {
     // Load current participant from localStorage
@@ -45,6 +49,23 @@ export function ParticipantList({ roomId }: ParticipantListProps) {
 
     fetchParticipants();
   }, [roomId]);
+
+  // Listen for participant updates via WebSocket
+  useEffect(() => {
+    const unsubscribe = onMessage((message: any) => {
+      if (message.action === 'participant_joined' && message.participant) {
+        setParticipants((prev) => {
+          // Check if participant already exists
+          const exists = prev.some((p) => p.id === message.participant.id);
+          if (exists) return prev;
+          // Add new participant
+          return [...prev, message.participant];
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [onMessage]);
 
   if (loading) {
     return (

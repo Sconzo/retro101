@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Avatar } from '../../../components/Avatar';
 import { CardEditInput } from './CardEditInput';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
@@ -14,6 +14,16 @@ export function Card({ card }: CardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const { updateCard, deleteCard } = useCardActions();
+  const deleteTimeoutRef = useRef<number | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (deleteTimeoutRef.current) {
+        clearTimeout(deleteTimeoutRef.current);
+      }
+    };
+  }, []);
   const getRelativeTime = (timestamp: string) => {
     const now = new Date();
     const created = new Date(timestamp);
@@ -36,14 +46,16 @@ export function Card({ card }: CardProps) {
   };
 
   const handleDelete = () => {
+    setShowDeleteConfirm(false);
+
     // Trigger fade-out animation
     setIsFadingOut(true);
 
     // Wait for animation to complete before deleting
-    setTimeout(() => {
+    deleteTimeoutRef.current = setTimeout(() => {
       deleteCard(card.id);
-      setShowDeleteConfirm(false);
-    }, 200); // Match animation duration
+      deleteTimeoutRef.current = null;
+    }, 200) as unknown as number; // Match animation duration
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

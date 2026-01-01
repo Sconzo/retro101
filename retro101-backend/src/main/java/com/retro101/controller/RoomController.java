@@ -9,15 +9,19 @@ import com.retro101.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
     public ResponseEntity<CreateRoomResponse> createRoom(@Valid @RequestBody CreateRoomRequest request) {
@@ -43,6 +47,16 @@ public class RoomController {
             @Valid @RequestBody AddParticipantRequest request
     ) {
         Participant participant = roomService.addParticipant(roomId, request.getName());
+
+        // Broadcast participant joined via WebSocket
+        Map<String, Object> message = new HashMap<>();
+        message.put("action", "participant_joined");
+        message.put("type", "PARTICIPANT_JOINED");
+        message.put("participant", participant);
+        message.put("timestamp", System.currentTimeMillis());
+
+        messagingTemplate.convertAndSend("/topic/room." + roomId, message);
+
         return ResponseEntity.ok(participant);
     }
 }

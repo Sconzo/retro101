@@ -10,6 +10,7 @@ type RoomState = {
 
 type RoomActions = {
   handleCardMessage: (message: CardBroadcastMessage) => void;
+  setCards: (cards: Card[]) => void;
   setConnectionStatus: (status: RoomState['connectionStatus']) => void;
   setError: (error: Error | null) => void;
   clearCards: () => void;
@@ -90,6 +91,10 @@ export const useRoomStore = create<RoomState & RoomActions>((set) => ({
           return state;
       }
     });
+  },
+
+  setCards: (cards) => {
+    set({ cards });
   },
 
   setConnectionStatus: (status) => {

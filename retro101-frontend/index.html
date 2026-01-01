@@ -7,6 +7,10 @@
     <title>retro101-frontend</title>
   </head>
   <body>
+    <script>
+      // Polyfill for libraries expecting Node.js global object
+      window.global = window;
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

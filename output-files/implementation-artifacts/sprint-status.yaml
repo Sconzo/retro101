@@ -64,5 +64,5 @@ development_status:
   3-2-accessibility-compliance-wcag-aa: review
   3-3-responsive-design-tablet-mobile: review
   3-4-animations-motion-preferences: review
-  3-5-cross-browser-testing-polish: ready-for-dev
+  3-5-cross-browser-testing-polish: in-progress
   epic-3-retrospective: optional

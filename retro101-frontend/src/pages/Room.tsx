@@ -24,7 +24,7 @@ export function Room() {
 
   // WebSocket connection
   const { isConnected, error: wsError, reconnectInfo, onMessage } = useWebSocket(roomId || '');
-  const { handleCardMessage, setConnectionStatus, setError: setWsError, clearCards } = useRoomStore();
+  const { handleCardMessage, setCards, setConnectionStatus, setError: setWsError, clearCards } = useRoomStore();
 
   // Update connection status based on WebSocket state
   useEffect(() => {
@@ -92,6 +92,15 @@ export function Room() {
         const data = await api.getRoomById(roomId);
         setRoom(data);
 
+        // Load existing cards
+        try {
+          const cards = await api.getCards(roomId);
+          setCards(cards);
+        } catch (cardErr) {
+          console.error('[Room] Failed to load cards:', cardErr);
+          // Don't fail the whole room load if cards fail
+        }
+
         // Check if participant already exists for this room
         const participantKey = `participant_${roomId}`;
         const existingParticipant = localStorage.getItem(participantKey);
@@ -114,7 +123,7 @@ export function Room() {
     };
 
     fetchRoom();
-  }, [roomId, navigate]);
+  }, [roomId, navigate, setCards]);
 
   const handleJoinRoom = async (name: string) => {
     if (!roomId) return;
