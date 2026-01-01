@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
@@ -27,6 +29,12 @@ public class RoomController {
     public ResponseEntity<Room> getRoomById(@PathVariable String roomId) {
         Room room = roomService.getRoomById(roomId);
         return ResponseEntity.ok(room);
+    }
+
+    @GetMapping("/{roomId}/participants")
+    public ResponseEntity<List<Participant>> getParticipants(@PathVariable String roomId) {
+        List<Participant> participants = roomService.getParticipants(roomId);
+        return ResponseEntity.ok(participants);
     }
 
     @PostMapping("/{roomId}/participants")

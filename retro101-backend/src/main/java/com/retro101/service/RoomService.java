@@ -55,6 +55,15 @@ public class RoomService {
                 .orElseThrow(() -> new com.retro101.exception.RoomNotFoundException("Room not found: " + roomId));
     }
 
+    public List<Participant> getParticipants(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new com.retro101.exception.RoomNotFoundException("Room not found: " + roomId));
+
+        return room.getParticipants() != null
+                ? room.getParticipants()
+                : new ArrayList<>();
+    }
+
     public Participant addParticipant(String roomId, String name) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new com.retro101.exception.RoomNotFoundException("Room not found: " + roomId));

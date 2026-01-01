@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Room as RoomType } from '../types/room';
 import { OnboardingModal } from '../features/room/components/OnboardingModal';
+import { ParticipantList } from '../features/room/components/ParticipantList';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -156,22 +157,32 @@ export function Room() {
             </p>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {room.categories.map((category) => (
-              <div
-                key={category.id}
-                className="bg-white rounded-lg shadow p-6 min-h-[300px]"
-              >
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
-                  {category.name}
-                </h2>
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">
-                    No cards yet - cards will be added in Story 2.2
-                  </p>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Main content: Categories */}
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {room.categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="bg-white rounded-lg shadow p-6 min-h-[300px]"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
+                      {category.name}
+                    </h2>
+                    <div className="space-y-2">
+                      <p className="text-gray-400 text-sm italic">
+                        No cards yet - cards will be added in Story 2.2
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Sidebar: Participant List */}
+            <div className="lg:col-span-1">
+              <ParticipantList roomId={roomId!} />
+            </div>
           </div>
         </div>
       </div>

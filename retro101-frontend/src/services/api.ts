@@ -58,4 +58,18 @@ export const api = {
 
     return response.json();
   },
+
+  async getParticipants(roomId: string): Promise<Participant[]> {
+    const response = await fetch(`${API_URL}/api/rooms/${roomId}/participants`);
+
+    if (response.status === 404) {
+      throw new Error('ROOM_NOT_FOUND');
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch participants');
+    }
+
+    return response.json();
+  },
 };
