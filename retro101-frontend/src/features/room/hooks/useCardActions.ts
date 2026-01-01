@@ -5,7 +5,7 @@ import type { Card } from '../../../types/room';
 
 export function useCardActions() {
   const { roomId } = useParams<{ roomId: string }>();
-  const { sendCardCreate, sendCardUpdate, isConnected } = useWebSocket(roomId || '');
+  const { sendCardCreate, sendCardUpdate, sendCardDelete, isConnected } = useWebSocket(roomId || '');
 
   const createCard = (content: string, categoryId: string) => {
     if (!roomId) {
@@ -117,5 +117,48 @@ export function useCardActions() {
     }
   };
 
-  return { createCard, updateCard };
+  const deleteCard = (cardId: string) => {
+    if (!roomId) {
+      console.error('No room ID available');
+      return;
+    }
+
+    if (!isConnected) {
+      console.error('WebSocket not connected');
+      return;
+    }
+
+    // Get current participant from localStorage
+    const participantKey = `participant_${roomId}`;
+    const participantData = localStorage.getItem(participantKey);
+
+    if (!participantData) {
+      console.error('No participant found in localStorage');
+      return;
+    }
+
+    const participant = JSON.parse(participantData);
+
+    // Store original cards for rollback
+    const originalCards = useRoomStore.getState().cards;
+
+    // Optimistic delete - remove from store immediately
+    const updatedCards = originalCards.filter((card) => card.id !== cardId);
+    useRoomStore.setState({ cards: updatedCards });
+
+    // Send to server
+    try {
+      sendCardDelete({
+        roomId,
+        cardId,
+        participantId: participant.id,
+      });
+    } catch (error) {
+      // Rollback on error
+      useRoomStore.setState({ cards: originalCards });
+      console.error('Failed to delete card:', error);
+    }
+  };
+
+  return { createCard, updateCard, deleteCard };
 }

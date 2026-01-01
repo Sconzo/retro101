@@ -1,6 +1,6 @@
 # Story 2.4: Delete Cards with Real-Time Synchronization
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -42,24 +42,25 @@ So that **we can remove duplicates, mistakes, or irrelevant feedback during the 
 
 ### Backend
 
-- [ ] Update CardService with deleteCard method
-- [ ] Implement handleDeleteCard in CardWebSocketController
-- [ ] Validate card exists before delete
+- [x] Update CardService with deleteCard method
+- [x] Implement handleDeleteCard in CardWebSocketController
+- [x] Validate card exists before delete
 
 ### Frontend
 
-- [ ] Add delete button to Card component
-- [ ] Create confirmation dialog component
-- [ ] Create useCardActions.deleteCard function
-- [ ] Handle CARD_DELETED messages in RoomView
-- [ ] Add fade-out animation
+- [x] Add delete button to Card component
+- [x] Create confirmation dialog component
+- [x] Create useCardActions.deleteCard function
+- [x] Handle CARD_DELETED messages in RoomView (already existed in roomStore)
+- [x] Add fade-out animation
 
 ### Testing
 
-- [ ] Test delete in 2 browser tabs
-- [ ] Verify delete syncs <500ms
-- [ ] Test confirmation dialog
-- [ ] Test optimistic delete
+- [x] Test compilation - Backend and frontend build successfully
+- [ ] Manual test: Test delete in 2 browser tabs
+- [ ] Manual test: Verify delete syncs <500ms
+- [ ] Manual test: Test confirmation dialog
+- [ ] Manual test: Test optimistic delete
 
 ## Dev Notes
 
@@ -89,4 +90,64 @@ public void deleteCard(String roomId, String cardId) {
 ## Dev Agent Record
 
 ### File List
-_To be filled by dev agent_
+
+**Backend Files Modified:**
+1. `retro101-backend/src/main/java/com/retro101/service/CardService.java`
+   - Added `deleteCard()` method with validation
+   - Validates room exists and card exists
+   - Removes card from room's card list using removeIf
+   - Saves room to repository
+
+2. `retro101-backend/src/main/java/com/retro101/controller/CardWebSocketController.java`
+   - Updated `deleteCard()` handler to call CardService.deleteCard()
+   - Added try-catch error handling
+   - Calls service to persist deletion before broadcasting
+   - Broadcasts card deletion to all room participants
+
+**Frontend Files Modified:**
+1. `retro101-frontend/src/features/room/components/Card.tsx`
+   - Added delete button with trash icon (appears next to edit button)
+   - Added confirmation dialog state management
+   - Added fade-out animation state
+   - Integrated ConfirmDialog component
+   - Added `handleDelete()` function with fade animation (200ms)
+   - Delete button shows on hover (not visible for temp/pending cards)
+
+2. `retro101-frontend/src/features/room/hooks/useCardActions.ts`
+   - Added `sendCardDelete` to destructured useWebSocket return
+   - Added `deleteCard()` function with optimistic delete pattern
+   - Validates roomId, connection, and participant data
+   - Stores original cards for rollback on error
+   - Filters out deleted card from store before sending to server
+   - Sends CardDeleteMessage via WebSocket
+   - Rollback to original state on error
+
+**Frontend Files Created:**
+1. `retro101-frontend/src/components/ConfirmDialog.tsx`
+   - New reusable confirmation dialog component
+   - Modal overlay with click-outside-to-close
+   - Variant support: danger, warning, info
+   - Customizable title, message, and button labels
+   - Accessible with data-testid attributes
+   - Prevents event bubbling on dialog click
+
+**Files Verified (No Changes Needed):**
+1. `retro101-frontend/src/hooks/useWebSocket.ts`
+   - Already had `sendCardDelete()` method exported
+
+2. `retro101-frontend/src/stores/roomStore.ts`
+   - Already had 'deleted' case in handleCardMessage
+   - Filters out deleted card from cards array
+
+### Build Results
+- Backend: ✅ Maven clean compile succeeded
+- Frontend: ✅ npm run build succeeded (335.67 kB)
+
+### Implementation Notes
+- Delete functionality uses same optimistic update pattern as Stories 2.2 and 2.3
+- Confirmation dialog prevents accidental deletions
+- Fade-out animation (200ms) provides visual feedback before removal
+- Backend validates card exists before deletion
+- Real-time sync via WebSocket broadcast to `/topic/room.{roomId}`
+- All acceptance criteria implemented and compilation verified
+- Optimistic delete removes card immediately from UI for responsive UX

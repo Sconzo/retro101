@@ -113,20 +113,29 @@ public class CardWebSocketController {
         log.info("Received card delete message: roomId={}, cardId={}, participantId={}",
                 message.getRoomId(), message.getCardId(), message.getParticipantId());
 
-        // Create broadcast message
-        CardBroadcastMessage broadcast = new CardBroadcastMessage();
-        broadcast.setAction("deleted");
-        broadcast.setCardId(message.getCardId());
-        broadcast.setCategoryId(null); // Not needed for delete
-        broadcast.setContent(null); // Not needed for delete
-        broadcast.setParticipantId(message.getParticipantId());
-        broadcast.setParticipantName(null); // Will be set by frontend
-        broadcast.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        try {
+            // Delete card via service (removes from room)
+            cardService.deleteCard(message.getRoomId(), message.getCardId());
 
-        // Broadcast to all subscribers of the room
-        messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), broadcast);
+            // Create broadcast message
+            CardBroadcastMessage broadcast = new CardBroadcastMessage();
+            broadcast.setAction("deleted");
+            broadcast.setCardId(message.getCardId());
+            broadcast.setCategoryId(null); // Not needed for delete
+            broadcast.setContent(null); // Not needed for delete
+            broadcast.setParticipantId(message.getParticipantId());
+            broadcast.setParticipantName(null); // Will be set by frontend
+            broadcast.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
-        log.info("Broadcasted card deleted: cardId={}", broadcast.getCardId());
+            // Broadcast to all subscribers of the room
+            messagingTemplate.convertAndSend("/topic/room." + message.getRoomId(), broadcast);
+
+            log.info("Broadcasted card deleted: cardId={}", broadcast.getCardId());
+        } catch (Exception e) {
+            log.error("Failed to delete card: roomId={}, cardId={}, error={}",
+                    message.getRoomId(), message.getCardId(), e.getMessage(), e);
+            // For MVP, just log the error - Story 2.5 will add proper error handling
+        }
     }
 
     /**

@@ -105,4 +105,36 @@ public class CardService {
         log.info("Card updated successfully: cardId={}", card.getId());
         return card;
     }
+
+    /**
+     * Deletes an existing card from the room.
+     *
+     * @param roomId     The ID of the room
+     * @param cardId     The ID of the card to delete
+     * @throws RoomNotFoundException      if room doesn't exist
+     * @throws IllegalArgumentException   if card not found
+     */
+    public void deleteCard(String roomId, String cardId) {
+        log.info("Deleting card={} from room={}", cardId, roomId);
+
+        // Validate room exists
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + roomId));
+
+        // Find and validate card exists
+        boolean cardExists = room.getCards().stream()
+                .anyMatch(c -> c.getId().equals(cardId));
+
+        if (!cardExists) {
+            throw new IllegalArgumentException("Card not found: " + cardId);
+        }
+
+        // Remove card from room
+        room.getCards().removeIf(card -> card.getId().equals(cardId));
+
+        // Save room (in-memory update)
+        roomRepository.save(room);
+
+        log.info("Card deleted successfully: cardId={}", cardId);
+    }
 }
