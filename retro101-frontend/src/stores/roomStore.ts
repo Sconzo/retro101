@@ -1,15 +1,6 @@
 import { create } from 'zustand';
 import type { CardBroadcastMessage } from '../services/websocket';
-
-export type Card = {
-  id: string;
-  categoryId: string;
-  content: string;
-  participantId: string;
-  participantName?: string;
-  createdAt: string;
-  updatedAt?: string;
-};
+import type { Card } from '../types/room';
 
 type RoomState = {
   cards: Card[];
@@ -35,6 +26,32 @@ export const useRoomStore = create<RoomState & RoomActions>((set) => ({
     set((state) => {
       switch (message.action) {
         case 'created': {
+          // Check if this is a replacement for a temp card (optimistic update)
+          const tempCardIndex = state.cards.findIndex(
+            (card) =>
+              card.id.startsWith('temp-') &&
+              card.authorId === message.participantId &&
+              card.content === message.content &&
+              card.categoryId === message.categoryId
+          );
+
+          const newCard: Card = {
+            id: message.cardId,
+            categoryId: message.categoryId!,
+            content: message.content!,
+            authorId: message.participantId,
+            authorName: message.participantName || message.participantId,
+            roomId: '', // Will be set from context
+            createdAt: message.timestamp,
+          };
+
+          if (tempCardIndex !== -1) {
+            // Replace temp card with real card
+            const updatedCards = [...state.cards];
+            updatedCards[tempCardIndex] = newCard;
+            return { cards: updatedCards };
+          }
+
           // Check if card already exists (duplicate prevention)
           const exists = state.cards.some((card) => card.id === message.cardId);
           if (exists) {
@@ -42,15 +59,7 @@ export const useRoomStore = create<RoomState & RoomActions>((set) => ({
             return state;
           }
 
-          const newCard: Card = {
-            id: message.cardId,
-            categoryId: message.categoryId!,
-            content: message.content!,
-            participantId: message.participantId,
-            participantName: message.participantName,
-            createdAt: message.timestamp,
-          };
-
+          // Add new card
           return {
             cards: [...state.cards, newCard],
           };

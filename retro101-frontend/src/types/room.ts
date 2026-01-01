@@ -11,6 +11,16 @@ export interface Participant {
   joinedAt: string;
 }
 
+export interface Card {
+  id: string;
+  content: string;
+  categoryId: string;
+  authorId: string;
+  authorName: string;
+  roomId: string;
+  createdAt: string;
+}
+
 export interface Room {
   id: string;
   categories: Category[];

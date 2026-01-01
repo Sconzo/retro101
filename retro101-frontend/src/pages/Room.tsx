@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import type { Room as RoomType } from '../types/room';
 import { OnboardingModal } from '../features/room/components/OnboardingModal';
 import { ParticipantList } from '../features/room/components/ParticipantList';
+import { CategoryColumn } from '../features/room/components/CategoryColumn';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useRoomStore } from '../stores/roomStore';
 import { ConnectionStatus } from '../components/ConnectionStatus';
@@ -203,19 +204,7 @@ export function Room() {
             <div className="lg:col-span-3">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {room.categories.map((category) => (
-                  <div
-                    key={category.id}
-                    className="bg-white rounded-lg shadow p-6 min-h-[300px]"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b pb-2">
-                      {category.name}
-                    </h2>
-                    <div className="space-y-2">
-                      <p className="text-gray-400 text-sm italic">
-                        No cards yet - cards will be added in Story 2.2
-                      </p>
-                    </div>
-                  </div>
+                  <CategoryColumn key={category.id} category={category} />
                 ))}
               </div>
             </div>

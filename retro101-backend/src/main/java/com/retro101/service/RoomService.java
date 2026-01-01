@@ -38,6 +38,7 @@ public class RoomService {
         room.setId(roomId);
         room.setCategories(categories);
         room.setParticipants(new ArrayList<>());
+        room.setCards(new ArrayList<>());
         room.setCreatedAt(LocalDateTime.now());
         room.setActive(true);
 
