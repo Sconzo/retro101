@@ -53,7 +53,7 @@ export function CategoryColumn({ category }: CategoryColumnProps) {
       ) : (
         <button
           onClick={() => setShowInput(true)}
-          className="w-full py-2 text-sm text-gray-600 border-2 border-dashed border-gray-300 rounded hover:border-blue-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full min-h-[48px] py-3 text-sm text-gray-600 border-2 border-dashed border-gray-300 rounded hover:border-blue-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           data-testid="add-card-button"
         >
           + Add Card

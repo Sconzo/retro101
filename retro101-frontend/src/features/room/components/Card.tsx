@@ -101,13 +101,13 @@ export function Card({ card }: CardProps) {
                   <>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                      className="p-2 text-gray-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded min-w-[44px] min-h-[44px] flex items-center justify-center"
                       aria-label="Edit card"
                       data-testid="card-edit-button"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -116,7 +116,7 @@ export function Card({ card }: CardProps) {
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="text-gray-400 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
+                      className="p-2 text-gray-400 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded min-w-[44px] min-h-[44px] flex items-center justify-center"
                       aria-label="Delete card"
                       data-testid="card-delete-button"
                     >
