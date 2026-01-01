@@ -4,6 +4,9 @@ import { api } from '../services/api';
 import type { Room as RoomType } from '../types/room';
 import { OnboardingModal } from '../features/room/components/OnboardingModal';
 import { ParticipantList } from '../features/room/components/ParticipantList';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { useRoomStore } from '../stores/roomStore';
+import { ConnectionStatus } from '../components/ConnectionStatus';
 
 export function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -15,6 +18,41 @@ export function Room() {
   const [showModal, setShowModal] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+
+  // WebSocket connection
+  const { isConnected, error: wsError, onMessage } = useWebSocket(roomId || '');
+  const { handleCardMessage, setConnectionStatus, setError: setWsError, clearCards } = useRoomStore();
+
+  // Update connection status based on WebSocket state
+  useEffect(() => {
+    if (isConnected) {
+      setConnectionStatus('connected');
+    } else {
+      setConnectionStatus('disconnected');
+    }
+  }, [isConnected, setConnectionStatus]);
+
+  // Handle WebSocket errors
+  useEffect(() => {
+    if (wsError) {
+      setWsError(wsError);
+      console.error('WebSocket error:', wsError);
+    }
+  }, [wsError, setWsError]);
+
+  // Subscribe to WebSocket messages
+  useEffect(() => {
+    if (!roomId) return;
+
+    const unsubscribe = onMessage((message) => {
+      handleCardMessage(message);
+    });
+
+    return () => {
+      unsubscribe();
+      clearCards();
+    };
+  }, [roomId, onMessage, handleCardMessage, clearCards]);
 
   useEffect(() => {
     if (!roomId) {
@@ -148,9 +186,12 @@ export function Room() {
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <header className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Retrospective Room
-            </h1>
+            <div className="flex items-start justify-between mb-2">
+              <h1 className="text-3xl font-bold text-gray-900">
+                Retrospective Room
+              </h1>
+              <ConnectionStatus />
+            </div>
             <p className="text-gray-600">
               {isFirstVisit && <span className="text-blue-600 font-semibold">Welcome! </span>}
               Share this room with your team to collaborate
