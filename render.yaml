@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: retro101-backend
+    runtime: docker
+    dockerfilePath: ./retro101-backend/Dockerfile
+    dockerContext: ./retro101-backend
+    plan: free
+    region: oregon
+    env: docker
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: PORT
+        value: 8080
+      - key: ALLOWED_ORIGINS
+        value: https://retro101.vercel.app
+      - key: FRONTEND_URL
+        value: https://retro101.vercel.app
+      - key: JAVA_OPTS
+        value: -Xmx512m -Xms256m
