@@ -2,10 +2,7 @@
 nixPkgs = ["maven", "jdk17"]
 
 [phases.build]
-cmds = [
-    "cd retro101-backend",
-    "mvn clean package -DskipTests"
-]
+cmds = ["mvn clean package -DskipTests"]
 
 [start]
-cmd = "java -jar retro101-backend/target/retro101-backend.jar"
+cmd = "java -jar target/retro101-backend.jar"
