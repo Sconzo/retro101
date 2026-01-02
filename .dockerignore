@@ -1,0 +1,35 @@
+# Frontend
+retro101-frontend/node_modules
+retro101-frontend/dist
+retro101-frontend/.env*
+
+# Backend
+retro101-backend/target
+retro101-backend/.env*
+retro101-backend/*.log
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude
+
+# BMAD
+_bmad
+
+# Other
+output-files
+*.bak
+nul
